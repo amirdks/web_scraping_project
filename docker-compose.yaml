@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+
+  database:
+    container_name: database
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    restart: always
+  
+  
+  app:
+    build:
+      context: .
+    image: app
+    container_name: django-app
+    volumes:
+      - static:/usr/src/app/static
+      - media:/usr/src/app/media
+      - .:/usr/src/app
+    depends_on:
+      - database
+    environment:
+      - SECRET_KEY=nv&l8x*mb@+n%d#ebzcf_oa#dku@h!$gxq8im#sqcq^q#p3m86
+      - DEBUG=False
+      - ALLOWED_HOSTS=app
+      - DATABASE_NAME=postgres
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_HOST=database
+      - DATABASE_PORT=5432
+  
+  
+  nginx:
+    image: nginx
+    container_name: nginx
+    ports:
+      - "92:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - static:/var/www/static
+      - media:/var/www/media
+    depends_on:
+      - app
+
+volumes:
+  postgres:
+  static:
+  media:
