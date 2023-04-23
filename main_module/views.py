@@ -3,6 +3,7 @@ import math
 
 import requests
 from bs4 import BeautifulSoup
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -20,7 +21,7 @@ class SearchView(View):
     def get(self, request):
         form = SearchForm()
         context = {
-            "form": form
+            "form": form,
         }
         return render(request, "main_module/search.html", context)
 
@@ -35,7 +36,14 @@ class SearchView(View):
 class ResultView(View):
     def get(self, request, search):
         jobs = Job.objects.filter(title__contains=search)
-        return render(request, "main_module/result.html", context={"jobs": jobs})
+        jobs = self.pagination(request, jobs, 10)
+        return render(request, "main_module/result.html", context={"jobs": jobs, "search": search})
+
+    def pagination(self, request, jobs, item_count):
+        paginator = Paginator(jobs, item_count)  # Show 25 contacts per page.
+        page_number = request.GET.get('page', 1)
+        products = paginator.get_page(page_number)
+        return products
 
 
 class TestView(View):

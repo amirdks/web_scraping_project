@@ -1,5 +1,6 @@
 import datetime
 import math
+import re
 
 import requests
 from bs4 import BeautifulSoup
@@ -23,6 +24,7 @@ class Jobs:
         self.last_page_item = item_count % page_item_number
         self.rang = range(self.page_count, 0, -1)
         self.job_results = []
+        self.image_regex = r'https?:\/\/storage.jobinjacdn.com/other/files/uploads/images/[\s\S]*'
 
     def get_page_result(self):
         page_results = []
@@ -50,10 +52,16 @@ class Jobs:
                 link = link_element.get("href")
                 title = link_element.text.strip()
                 time = item.find("span", class_="c-jobListView__passedDays")
+                image = item.find("img", class_="o-listView__itemIndicatorImage")
+                match = re.search(self.image_regex, image["src"])
+                image_link = None
+                if match:
+                    image_link = match.group()
                 date = self.generate_item_date(time)
                 self.job_results.append({
                     "title": title,
                     "published_at": date,
+                    "image": image_link,
                     "link": link
                 })
         # return self.job_results
@@ -63,7 +71,6 @@ class Jobs:
             if self.get_last_job_title() == item["title"]:
                 return "almost_success"
             if idx == 0: item.update({"is_last": True})
-            del item["link"]
             Job.objects.create(**item)
         return "success"
 
@@ -80,7 +87,8 @@ class Jobs:
 
     @staticmethod
     def get_last_job_title():
-        return Job.objects.get_last_job_title()
+        title = Job.objects.get_last_job_title()
+        return title
 
     @staticmethod
     def generate_item_date(time):

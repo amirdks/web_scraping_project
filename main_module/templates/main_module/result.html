@@ -1,14 +1,51 @@
-<!DOCTYPE html>
+{% load static %}
+{% load jalali_tags %}
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/results.css' %}">
 </head>
 <body>
-<ul>
-    {% for job in jobs %}
-    <li>{{job.title}}</li>
-    {% endfor %}
-</ul>
+<h1 class="page-title">نتایج جست و جوی "{{search}}"</h1>
+<div class="result-container">
+    <div class="result-section">
+        {% for job in jobs %}
+        <div class="result-item">
+            {% if job.image %}
+            <img src="{{job.image}}" alt="" class="result-image">
+            {% else %}
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1200px-Default_pfp.svg.png"
+                 alt="" class="result-image">
+            {% endif %}
+            <div class="result-content">
+                <h2 class="result-title">{{job.title}}</h2>
+                <p class="result-date">{{job.published_at|to_jalali:"%Y/%m/%d"}}</p>
+                <div class="result-link"><a target="_blank" href="{{job.link}}">دیدن صفحه آگهی</a></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<nav aria-label="...">
+    <ul class="pagination">
+        <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1">Previous</a>
+        </li>
+        <li class="page-item"><a class="page-link" href="#">1</a></li>
+        <li class="page-item active">
+            <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item">
+            <a class="page-link" href="#">Next</a>
+        </li>
+    </ul>
+</nav>
 </body>
 </html>
