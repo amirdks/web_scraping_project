@@ -75,3 +75,15 @@ body {
     text-decoration: none;
     color: black;
 }
+
+@media (max-width: 641px) {
+    .page-title{
+        font-size: 2em;
+    }
+    .result-item{
+        width: 100%;
+    }
+    .result-section .result-image{
+        height: 200px;
+    }
+}
