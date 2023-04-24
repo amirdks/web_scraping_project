@@ -9,7 +9,7 @@ from django.db.models.expressions import NoneType
 class JobManager(models.Manager):
     def get_last_job_title(self):
         try:
-            title = self.filter(is_last=True).last().title
+            title = self.filter(is_last=True).last().link
         except:
             title = ""
         return title

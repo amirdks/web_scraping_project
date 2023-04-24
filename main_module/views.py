@@ -14,7 +14,11 @@ from main_module.forms import SearchForm
 from main_module.models import Job
 from main_module.tasks import fetch_data_from_site
 
-
+def pagination(request, jobs, item_count):
+        paginator = Paginator(jobs, item_count)  # Show 25 contacts per page.
+        page_number = request.GET.get('page', 1)
+        products = paginator.get_page(page_number)
+        return products
 # Create your views here.
 
 class SearchView(View):
@@ -36,14 +40,15 @@ class SearchView(View):
 class ResultView(View):
     def get(self, request, search):
         jobs = Job.objects.filter(title__contains=search)
-        jobs = self.pagination(request, jobs, 10)
+        jobs = pagination(request, jobs, 10)
         return render(request, "main_module/result.html", context={"jobs": jobs, "search": search})
 
-    def pagination(self, request, jobs, item_count):
-        paginator = Paginator(jobs, item_count)  # Show 25 contacts per page.
-        page_number = request.GET.get('page', 1)
-        products = paginator.get_page(page_number)
-        return products
+
+class AllResultView(View):
+    def get(self, request):
+        jobs = Job.objects.all()
+        jobs = pagination(request, jobs, 10)
+        return render(request, "main_module/result.html", context={"jobs": jobs, "search": "همه نتایج"})
 
 
 class TestView(View):

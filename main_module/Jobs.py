@@ -68,7 +68,7 @@ class Jobs:
 
     def save_jobs_in_db(self):
         for idx, item in enumerate(self.job_results[::-1]):
-            if self.get_last_job_title() == item["title"]:
+            if self.get_last_job_title() == item["link"]:
                 return "almost_success"
             if idx == 0: item.update({"is_last": True})
             Job.objects.create(**item)
