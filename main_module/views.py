@@ -3,6 +3,7 @@ import math
 
 import requests
 from bs4 import BeautifulSoup
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -14,14 +15,17 @@ from main_module.forms import SearchForm
 from main_module.models import Job
 from main_module.tasks import fetch_data_from_site
 
+
 def pagination(request, jobs, item_count):
-        paginator = Paginator(jobs, item_count)  # Show 25 contacts per page.
-        page_number = request.GET.get('page', 1)
-        products = paginator.get_page(page_number)
-        return products
+    paginator = Paginator(jobs, item_count)  # Show 25 contacts per page.
+    page_number = request.GET.get('page', 1)
+    products = paginator.get_page(page_number)
+    return products
+
+
 # Create your views here.
 
-class SearchView(View):
+class SearchView(LoginRequiredMixin, View):
     def get(self, request):
         form = SearchForm()
         context = {
@@ -37,9 +41,13 @@ class SearchView(View):
         return render(request, "main_module/search.html", {"form": form})
 
 
-class ResultView(View):
+class ResultView(LoginRequiredMixin, View):
     def get(self, request, search):
-        jobs = Job.objects.filter(title__contains=search)
+
+        if search == "all":
+            jobs = Job.objects.all()
+        else:
+            jobs = Job.objects.filter(title__contains=search)
         jobs = pagination(request, jobs, 10)
         return render(request, "main_module/result.html", context={"jobs": jobs, "search": search})
 

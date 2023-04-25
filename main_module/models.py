@@ -7,12 +7,12 @@ from django.db.models.expressions import NoneType
 
 
 class JobManager(models.Manager):
-    def get_last_job_title(self):
+    def get_last_job_link(self):
         try:
-            title = self.filter(is_last=True).last().link
+            link = self.filter(is_last=True).last().link
         except:
-            title = ""
-        return title
+            link = ""
+        return link
 
 
 class Job(models.Model):
@@ -27,6 +27,7 @@ class Job(models.Model):
     class Meta:
         verbose_name = "شغل"
         verbose_name_plural = "شغل ها"
+        ordering = ["-published_at"]
 
     def __str__(self):
         return self.title

@@ -1,29 +1,18 @@
 import datetime
-import math
 import re
 
 import requests
 from bs4 import BeautifulSoup
 from unidecode import unidecode
 
-from main_module.models import Job
-
-
-class RequestException(Exception):
-    pass
-
+from main_module.sites.Jobs import Jobs
 
 init_url = "https://jobinja.ir/jobs/latest-job-post-%D8%A7%D8%B3%D8%AA%D8%AE%D8%AF%D8%A7%D9%85%DB%8C-%D8%AC%D8%AF%DB%8C%D8%AF?preferred_before=1682092785&sort_by=published_at_desc"
 
 
-class Jobs:
+class Jobinja(Jobs):
     def __init__(self, url=init_url, item_count=25, page_item_number=20):
-        self.url = url
-        self.item_count = item_count
-        self.page_count = math.ceil(item_count / page_item_number)
-        self.last_page_item = item_count % page_item_number
-        self.rang = range(self.page_count, 0, -1)
-        self.job_results = []
+        super(Jobinja, self).__init__(url, item_count, page_item_number)
         self.image_regex = r'https?:\/\/storage.jobinjacdn.com/other/files/uploads/images/[\s\S]*'
 
     def get_page_result(self):
@@ -35,7 +24,7 @@ class Jobs:
                     headers={"User-Agent": "Mozilla/5.0"}
                 )
             except requests.exceptions.RequestException as e:  # This is the correct syntax
-                raise RequestException(e)
+                raise self.RequestException(e)
             soup = BeautifulSoup(response.content, "html.parser")
             result = (
                 soup.findAll("div", attrs={"class": "o-listView__itemInfo"})[:self.last_page_item]
@@ -64,31 +53,6 @@ class Jobs:
                     "image": image_link,
                     "link": link
                 })
-        # return self.job_results
-
-    def save_jobs_in_db(self):
-        for idx, item in enumerate(self.job_results[::-1]):
-            if self.get_last_job_title() == item["link"]:
-                return "almost_success"
-            if idx == 0: item.update({"is_last": True})
-            Job.objects.create(**item)
-        return "success"
-
-    def get_job_detail_data(self):
-        for job in self.job_results:
-            try:
-                response = requests.get(job.get("link"), headers={"User-Agent": "Mozilla/5.0"})
-            except requests.exceptions.RequestException as e:
-                raise RequestException(e)
-            soup = BeautifulSoup(response.content, "html.parser")
-            result = soup.findAll("div", attrs={"class": "o-box__text"})
-            print(result[0].text)
-            # TODO: save results in a variable and return it or save theme in database
-
-    @staticmethod
-    def get_last_job_title():
-        title = Job.objects.get_last_job_title()
-        return title
 
     @staticmethod
     def generate_item_date(time):
