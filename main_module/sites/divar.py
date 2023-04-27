@@ -4,6 +4,7 @@ import re
 import requests
 from bs4 import BeautifulSoup
 
+from main_module.models import Site
 from main_module.sites.Jobs import Jobs
 
 init_url = "https://divar.ir/s/karaj/jobs"
@@ -14,6 +15,7 @@ class Divar(Jobs):
         super(Divar, self).__init__(url, item_count, page_item_number)
         self.image_regex = r'https?:\/\/storage.jobinjacdn.com/other/files/uploads/images/[\s\S]*'
         self.base_url = "https://divar.ir"
+        self.site_id = Site.objects.get(title="divar").id
 
     def get_page_result(self):
         try:
@@ -41,11 +43,13 @@ class Divar(Jobs):
             if image:
                 image_link = image.get("data-src")
             date = datetime.datetime.now()
+            self.links_list.append(link)
             result = {
                 "title": title,
                 "published_at": date,
                 "image": image_link,
-                "link": link
+                "link": link,
+                "site_id": self.site_id
             }
             self.job_results.append(result)
 

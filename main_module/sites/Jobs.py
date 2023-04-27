@@ -6,7 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 from unidecode import unidecode
 
-from main_module.models import Job
+from main_module.models import Job, Site
 
 
 class Jobs:
@@ -17,11 +17,16 @@ class Jobs:
         self.last_page_item = item_count % page_item_number
         self.rang = range(self.page_count, 0, -1)
         self.job_results = []
+        self.site_id = None
+        self.links_list = []
 
     def save_jobs_in_db(self):
-        for idx, item in enumerate(self.job_results[::-1]):
-            if self.get_last_job_link() == item["link"]:
-                return "almost_success"
+        duplicated_job_items = Job.objects.filter(site_id=self.site_id, link__in=self.links_list).values_list("link")
+        duplicated = [link[0] for link in duplicated_job_items]
+        res = [x for x in self.job_results if x["link"] not in duplicated]
+        for idx, item in enumerate(res[::-1]):
+            # if self.get_last_job_link() == item["link"]:
+            #     return "almost_success"
             if idx == 0: item.update({"is_last": True})
             Job.objects.create(**item)
         return "success"
@@ -35,9 +40,8 @@ class Jobs:
         return soup
         # TODO: save results in a variable and return it or save theme in database
 
-    @staticmethod
-    def get_last_job_link():
-        link = Job.objects.get_last_job_link()
+    def get_last_job_link(self):
+        link = Job.objects.get_last_job_link(self.site_id)
         return link
 
     class RequestException(Exception):

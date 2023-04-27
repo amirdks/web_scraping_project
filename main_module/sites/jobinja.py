@@ -5,6 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 from unidecode import unidecode
 
+from main_module.models import Site
 from main_module.sites.Jobs import Jobs
 
 init_url = "https://jobinja.ir/jobs/latest-job-post-%D8%A7%D8%B3%D8%AA%D8%AE%D8%AF%D8%A7%D9%85%DB%8C-%D8%AC%D8%AF%DB%8C%D8%AF?preferred_before=1682092785&sort_by=published_at_desc"
@@ -14,6 +15,7 @@ class Jobinja(Jobs):
     def __init__(self, url=init_url, item_count=25, page_item_number=20):
         super(Jobinja, self).__init__(url, item_count, page_item_number)
         self.image_regex = r'https?:\/\/storage.jobinjacdn.com/other/files/uploads/images/[\s\S]*'
+        self.site_id = Site.objects.get(title="jobinja").id
 
     def get_page_result(self):
         page_results = []
@@ -47,11 +49,13 @@ class Jobinja(Jobs):
                 if match:
                     image_link = match.group()
                 date = self.generate_item_date(time)
+                self.links_list.append(link)
                 self.job_results.append({
                     "title": title,
                     "published_at": date,
                     "image": image_link,
-                    "link": link
+                    "link": link,
+                    "site_id": self.site_id
                 })
 
     @staticmethod

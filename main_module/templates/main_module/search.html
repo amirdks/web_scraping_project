@@ -9,16 +9,21 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-<div>
-    <h1 id="title">جست و جو بین داده های سایت جابینجا</h1>
-    <div class="wrapper">
-        <div class="search-input">
-            <a href="" target="_blank" hidden></a>
-            <form method="post" action="{% url 'search_view' %}">
-                {{form.search}}
-                {% csrf_token %}
-            </form>
-            <div class="icon"><i class="fas fa-search"></i></div>
+<span id="user-info">{{request.user.email}}
+<p style="text-align: center">balance = <span style="text-decoration: underline">{{wallet.current_balance}}</span> coin</p>
+</span>
+<div class="main-container">
+    <div>
+        <h1 id="title">جست و جو بین داده های سایت جابینجا</h1>
+        <div class="wrapper">
+            <div class="search-input">
+                <a href="" target="_blank" hidden></a>
+                <form method="post" action="{% url 'search_view' %}">
+                    {{form.search}}
+                    {% csrf_token %}
+                </form>
+                <div class="icon"><i class="fas fa-search"></i></div>
+            </div>
         </div>
     </div>
 </div>
