@@ -14,6 +14,16 @@
     <link rel="stylesheet" href="{% static 'css/results.css' %}">
 </head>
 <body>
+<span id="user-info">
+    {% if wallet is not None %}
+        <p>{{ request.user.email }}</p>
+        <p style="text-align: center">balance = <span
+                style="text-decoration: underline">{{ wallet.current_balance }}</span> coin</p>
+        <a href="{% url 'logout_view' %}">خروج از حساب کاربری</a>
+    {% else %}
+        <a href="{% url 'login_view' %}" class="login-warning">برای جست و جو لطفا ابتدا در حساب خود لاگین کنید</a>
+    {% endif %}
+</span>
 <h1 class="page-title">نتایج جست و جوی "{{ search }}"</h1>
 <div class="result-container">
     <div class="result-section">
@@ -28,7 +38,12 @@
                 <div class="result-content">
                     <h2 class="result-title">{{ job.title }}</h2>
                     <p class="result-date">{{ job.published_at|to_jalali:"%Y/%m/%d" }}</p>
-                    <div class="result-link"><a target="_blank" href="{{ job.link }}">دیدن صفحه آگهی</a></div>
+                    {% if request.user.is_authenticated %}
+                        <div class="result-link"><a target="_blank" href="{% url 'redirect_view' pk=job.id %}">دیدن صفحه
+                            آگهی</a></div>
+                    {% else %}
+                        <div class="result-link"><a href="{% url 'login_view' %}">برای دیدن آگهی لطفا ابتدا لاگین کنید</a></div>
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}

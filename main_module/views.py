@@ -27,13 +27,13 @@ def pagination(request, jobs, item_count):
 
 # Create your views here.
 
-class SearchView(LoginRequiredMixin, View):
+class SearchView(View):
     def get(self, request: HttpRequest):
         form = SearchForm()
         try:
             wallet = Wallet.objects.get(user_id=request.user.id)
         except Wallet.DoesNotExist:
-            return redirect(reverse("login_view"))
+            wallet = None
         context = {
             "form": form,
             "wallet": wallet
@@ -48,19 +48,20 @@ class SearchView(LoginRequiredMixin, View):
         return render(request, "main_module/search.html", {"form": form})
 
 
-class ResultView(LoginRequiredMixin, View):
+class ResultView(View):
     def get(self, request: HttpRequest, search):
-        wallet = Wallet.objects.get(user_id=request.user.id)
-        if wallet.current_balance >= -1:
-            if search == "all":
-                jobs = Job.objects.all()
-            else:
-                jobs = Job.objects.filter(title__contains=search)
-            jobs = pagination(request, jobs, 24)
-            # wallet.withdraw(1)
-            return render(request, "main_module/result.html", context={"jobs": jobs, "search": search})
+        if request.user.is_authenticated:
+            wallet = Wallet.objects.get(user_id=request.user.id)
         else:
-            return HttpResponseForbidden("شما باید ابتدا حساب خود را شارژ کنید")
+            wallet = None
+        if search == "all":
+            jobs = Job.objects.all()
+        else:
+            jobs = Job.objects.filter(title__contains=search)
+        jobs = pagination(request, jobs, 24)
+        # wallet.withdraw(1)
+        return render(request, "main_module/result.html",
+                      context={"jobs": jobs, "search": search, "wallet": wallet})
 
 
 class TestView(View):
@@ -68,3 +69,23 @@ class TestView(View):
         res = fetch_data_from_site()
         print(res)
         return HttpResponse("aha")
+
+
+class RedirectView(LoginRequiredMixin, View):
+    http_method_names = ["get"]
+
+    def get(self, reqeust: HttpRequest, pk):
+        user = reqeust.user
+        try:
+            job = Job.objects.get(pk=pk)
+        except Job.DoesNotExist:
+            return HttpResponse("آگهی مورد نظر شما یافت نشد")
+        if user.is_authenticated:
+            wallet = Wallet.objects.get(user_id=user.id)
+            try:
+                wallet.withdraw(1)
+            except wallet.InsufficientBalance as e:
+                return HttpResponse("موجودی شما برای دیدن آگهی جدید کافی نمیباشد")
+            return redirect(job.link)
+        else:
+            return redirect("login_view")

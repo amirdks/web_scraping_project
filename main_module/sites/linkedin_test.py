@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common import by
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -10,7 +11,6 @@ from bs4 import BeautifulSoup as bs
 import re as re
 import time
 import pandas as pd
-
 from main_module.models import Site
 from main_module.sites.Jobs import Jobs
 
@@ -28,21 +28,27 @@ class LinkedinTest(Jobs):
 
     def autologin(self, username="amirdks84@gmail.com", password="61683550",
                   url="https://www.linkedin.com/uas/login"):
-        self.driver.get(url)
-        password_input = self.driver.find_element_by_xpath("//input[@type='password']")
-        password_input.send_keys(password)
-        username_input = password_input.find_element_by_xpath(
-            ".//preceding::input[not(@type='hidden')]")
-        username_input.send_keys(username)
-        form_element = password_input.find_element_by_xpath(".//ancestor::form")
-        submit_button = form_element.find_element_by_xpath(
-            ".//*[@type='submit']").click()
-        return self.driver
+        try:
+            self.driver.get(url)
+            password_input = self.driver.find_element_by_xpath("//input[@type='password']")
+            password_input.send_keys(password)
+            username_input = password_input.find_element_by_xpath(
+                ".//preceding::input[not(@type='hidden')]")
+            username_input.send_keys(username)
+            form_element = password_input.find_element_by_xpath(".//ancestor::form")
+            submit_button = form_element.find_element_by_xpath(
+                ".//*[@type='submit']").click()
+            return self.driver
+        except WebDriverException as e:
+            raise self.RequestException("check your internet connection")
 
     def get_page_result(self):
         self.autologin()
         time.sleep(5)
-        self.driver.get(self.url)
+        try:
+            self.driver.get(self.url)
+        except WebDriverException as e:
+            raise self.RequestException("check your internet connection")
         time.sleep(5)
         start = time.time()
         last_height = self.driver.execute_script("return document.body.scrollHeight")
@@ -63,24 +69,51 @@ class LinkedinTest(Jobs):
         jobs_container = main_ul.findChildren("li", recursive=False)
         return jobs_container
 
-    # def chatgpt(self):
-    #     url = "https://www.linkedin.com/jobs/search/?geoId=92000000&keywords=&location=Worldwide&sortBy=DD"
-    #     driver = webdriver.Firefox()
-    #     driver.get(url)
-    #     time.sleep(5)
-    #     jobs = []
-    #     soup = bs(driver.page_source, "html.parser")
-    #     for element in soup.find_all("li", class_="result-card"):
-    #         job = {}
-    #         job['title'] = element.find("h3", class_="result-card__title").text.strip()
-    #         job['link'] = element.find("a", href=True)['href']
-    #         job['image'] = element.find("img", class_="result-card__image")['src']
-    #         job['date'] = element.find("time", class_="result-card__datetime")['datetime']
-    #         jobs.append(job)
-    #     print(jobs)
-    #     for job in jobs:
-    #         print(job['title'], job['link'], job['image'], job['date'])
-    #     driver.close()
+    def chatgpt(self):
+        self.autologin()
+        url = "https://www.linkedin.com/jobs/search/?location=Worldwide&sortBy=DD"
+        self.driver.get(url)
+        time.sleep(5)
+        no_of_jobs = int(
+            self.driver.find_element_by_css_selector('h1 > span').get_attribute('innerText').replace('+', '').replace(
+                ",", '')
+        )
+        i = 2
+        while i <= int(25 / 25) + 1:
+            self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            i = i + 1
+            try:
+                self.driver.find_element_by_xpath(' / html / body / main / div / section / button').click()
+                time.sleep(5)
+            except:
+                pass
+                time.sleep(5)
+        # print(self.driver.page_source)
+        # return "okab"
+        jobs_lists = self.driver.find_element_by_class_name('jobs-search__results-list')
+        jobs = jobs_lists.find_elements_by_tag_name('li')[:25]  # return a list
+        for job in jobs:
+            job_title0 = job.find_element_by_css_selector('h3').get_attribute('innerText')
+            company_name0 = job.find_element_by_css_selector('h4').get_attribute('innerText')
+            location0 = job.find_element_by_css_selector('[class="job-search-card__location"]').get_attribute(
+                'innerText')
+            date0 = job.find_element_by_css_selector('div > div > time').get_attribute('datetime')
+            job_link0 = job.find_element_by_css_selector('a').get_attribute('href')
+            image = job.find_element_by_css_selector('img').get_attribute('src')
+            job_res = {
+                "title": job_title0,
+                "published_at": date0,
+                "image": image,
+                "link": job_link0,
+                "site_id": self.site_id
+            }
+            self.job_results.append(job_res)
+
+        # print(
+        #     {"job_id": job_id, "job_title": job_title, "company_name": company_name, "location": location, "date": date,
+        #      "job_link": job_link, })
+        self.driver.close()
+        return "success"
 
     def get_job_results(self, page_results):
         for job in page_results[::-1]:

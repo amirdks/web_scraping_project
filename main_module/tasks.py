@@ -38,11 +38,13 @@ def fetch_data_from_linkedin():
     job = LinkedinTest()
     try:
         page_results = job.get_page_result()
+        job.get_job_results(page_results)
+        res = job.save_jobs_in_db()
+        return "success"
     except job.RequestException as e:
-        return "failed"
-    job.get_job_results(page_results)
-    res = job.save_jobs_in_db()
-    return "success"
+        print("failed")
+        print("error =>>", e)
+        return "failed returned"
 
 
 # @shared_task
@@ -79,5 +81,8 @@ def fetch_data_from_site():
     # linkedin = LinkedinTest()
     # job_res = linkedin.new_test()
     # print(job_res)
-    fetch_data_from_linkedin()
+    # res = fetch_data_from_linkedin()
+    linkedin = LinkedinTest()
+    linkedin.chatgpt()
+    res = linkedin.save_jobs_in_db()
     return res

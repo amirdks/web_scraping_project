@@ -9,8 +9,15 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-<span id="user-info">{{request.user.email}}
-<p style="text-align: center">balance = <span style="text-decoration: underline">{{wallet.current_balance}}</span> coin</p>
+<span id="user-info">
+    {% if wallet is not None %}
+        <p>{{ request.user.email }}</p>
+        <p style="text-align: center">balance = <span
+                style="text-decoration: underline">{{ wallet.current_balance }}</span> coin</p>
+        <a href="{% url 'logout_view' %}">خروج از حساب کاربری</a>
+    {% else %}
+        <a href="{% url 'login_view' %}" class="login-warning">برای جست و جو لطفا ابتدا در حساب خود لاگین کنید</a>
+    {% endif %}
 </span>
 <div class="main-container">
     <div>
@@ -19,7 +26,7 @@
             <div class="search-input">
                 <a href="" target="_blank" hidden></a>
                 <form method="post" action="{% url 'search_view' %}">
-                    {{form.search}}
+                    {{ form.search }}
                     {% csrf_token %}
                 </form>
                 <div class="icon"><i class="fas fa-search"></i></div>
