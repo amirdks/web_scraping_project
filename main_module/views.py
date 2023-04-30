@@ -15,7 +15,6 @@ from account_module.models import Wallet
 from core import settings
 from main_module.forms import SearchForm
 from main_module.models import Job
-from main_module.tasks import fetch_data_from_site
 
 
 def pagination(request, jobs, item_count):
@@ -64,11 +63,11 @@ class ResultView(View):
                       context={"jobs": jobs, "search": search, "wallet": wallet})
 
 
-class TestView(View):
-    def get(self, request):
-        res = fetch_data_from_site()
-        print(res)
-        return HttpResponse("aha")
+# class TestView(View):
+#     def get(self, request):
+#         res = fetch_data_from_site()
+#         print(res)
+#         return HttpResponse("aha")
 
 
 class RedirectView(LoginRequiredMixin, View):
