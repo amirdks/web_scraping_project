@@ -44,3 +44,22 @@ class Job(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class JobSeeker(models.Model):
+    site = models.ForeignKey("Site", on_delete=models.SET_NULL, null=True)
+    full_name = models.CharField(max_length=255)
+    avatar = models.ImageField("images", null=True, blank=True)
+    image = models.TextField(validators=[URLValidator()], null=True, blank=True, verbose_name="آدرس تصویر")
+    link = models.TextField(validators=[URLValidator()], null=True, blank=True, verbose_name="لینک صفحه آگهی")
+    is_last = models.BooleanField(default=False, verbose_name="آخرین آیتم")
+    created_at = models.DateTimeField(auto_now_add=True)
+    objects = JobManager()
+
+    class Meta:
+        verbose_name = "کارجو"
+        verbose_name_plural = "کارجو ها"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.full_name

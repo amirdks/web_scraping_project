@@ -43,34 +43,6 @@ class Divar(Jobs):
             page_results.append(result)
         return page_results
 
-    # def get_page_result(self):
-    #     try:
-    #         self.driver.get(self.url)
-    #     except WebDriverException as e:
-    #         raise self.RequestException("check your internet connection")
-    #     time.sleep(5)
-    #     i = 1
-    #     while i <= self.page_count:
-    #         print("runned ==>", i)
-    #         self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    #         time.sleep(5)
-    #         i += 1
-    #
-    #     page = self.driver.page_source
-    #     divar_soup = BeautifulSoup(page.encode("utf-8"), "html.parser")
-    #     divar_soup.prettify()
-    #     result = divar_soup.findAll("div", attrs={"class": "post-card-item-af972 kt-col-6-bee95 kt-col-xxl-4-e9d46"})[
-    #              :self.item_count]
-    #     items_container = self.driver.find_element_by_xpath("/html/body/div/div[2]/main/div[2]/div/div")
-    #     items_containers = self.driver.find_elements_by_class_name(
-    #         "post-card-item-af972 kt-col-6-bee95 kt-col-xxl-4-e9d46")
-    #     print(len(items_containers))
-    #     print("---------------------")
-    #     print(items_containers)
-    #     print(divar_soup)
-    #     # print(len(result))
-    #     # return result
-
     def get_job_results(self, page_results):
 
         for page in page_results:

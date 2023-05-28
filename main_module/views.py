@@ -14,7 +14,8 @@ from unidecode import unidecode
 from account_module.models import Wallet
 from core import settings
 from main_module.forms import SearchForm
-from main_module.models import Job
+from main_module.models import Job, JobSeeker
+from main_module.tasks import fetch_data_from_jobseeker
 
 
 def pagination(request, jobs, item_count):
@@ -88,3 +89,25 @@ class RedirectView(LoginRequiredMixin, View):
             return redirect(job.link)
         else:
             return redirect("login_view")
+
+
+class TestView(View):
+    def get(self, request):
+        fetch_data_from_jobseeker()
+        return HttpResponse("salam")
+
+
+class ResultSeekerView(View):
+    def get(self, request: HttpRequest, search):
+        if request.user.is_authenticated:
+            wallet = Wallet.objects.get(user_id=request.user.id)
+        else:
+            wallet = None
+        if search == "all":
+            jobs = JobSeeker.objects.all()
+        else:
+            jobs = JobSeeker.objects.filter(title__contains=search)
+        jobs = pagination(request, jobs, 24)
+        # wallet.withdraw(1)
+        return render(request, "main_module/result_seeker.html",
+                      context={"jobs": jobs, "search": search, "wallet": wallet})
