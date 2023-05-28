@@ -39,7 +39,7 @@
                     <h2 class="result-title">{{ job.title }}</h2>
                     <p class="result-date">{{ job.published_at|to_jalali:"%Y/%m/%d" }}</p>
                     {% if request.user.is_authenticated %}
-                        <div class="result-link"><a target="_blank" href="{% url 'redirect_view' pk=job.id %}">دیدن صفحه
+                        <div class="result-link"><a target="_blank" href="{{ job.link }}">دیدن صفحه
                             آگهی</a></div>
                     {% else %}
                         <div class="result-link"><a href="{% url 'login_view' %}">برای دیدن آگهی لطفا ابتدا لاگین کنید</a></div>
