@@ -25,17 +25,38 @@
         <div class="wrapper">
             <div class="search-input">
                 <a href="" target="_blank" hidden></a>
-                <form method="post" action="{% url 'search_view' %}">
-                    {{ form.search }}
-                    {% csrf_token %}
-                </form>
+                {#                <form method="post" action="{% url 'search_view' %}">#}
+                {#                    {{ form.search }}#}
+                <input type="text" id="search-input">
+                {#                    {% csrf_token %}#}
+                {#                </form>#}
                 <div class="icon"><i class="fas fa-search"></i></div>
             </div>
+            <div class="search-what-btns">
+                <div onclick="searchInJobseeker()" class="search-in-jobseeker">
+                    جست و جو به عنولن کارفرما
+                </div>
+                <div onclick="searchInJob()" class="search-in-jobs">
+                    جست و جو برای شفل ها
+                </div>
+            </div>
         </div>
+
 
     </div>
 </div>
 
+<script>
+    let input = document.querySelector("#search-input")
+
+    function searchInJobseeker() {
+        location.replace(`http://127.0.0.1:8000/s/${input.value}`)
+    }
+
+    function searchInJob() {
+        location.replace(`http://127.0.0.1:8000/v/${input.value}`)
+    }
+</script>
 <!--<script src="js/suggestions.js"></script>-->
 <!--<script src="js/script.js"></script>-->
 

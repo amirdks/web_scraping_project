@@ -124,6 +124,28 @@ body {
     color: #644bff;
     cursor: pointer;
 }
+.search-what-btns{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin: 25px auto 0;
+}
+.search-what-btns div{
+    width: 40%;
+    padding: 15px 0;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 20px;
+}
+.search-in-jobseeker{
+    background-color: #0c5460;
+    color: white;
+}
+.search-in-jobs{
+    background-color: #1c7430;
+    color: white;
+}
 
 
 @media (min-width: 320px) {
