@@ -60,6 +60,11 @@ body {
     text-align: center;
     font-size: 1.2em;
 }
+.result-description{
+    font-size: 1em;
+    text-align: center;
+    opacity: .8;
+}
 
 .result-date {
     font-size: 1em;

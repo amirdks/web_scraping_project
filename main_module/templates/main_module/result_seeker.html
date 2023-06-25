@@ -37,6 +37,7 @@
                 {% endif %}
                 <div class="result-content">
                     <h2 class="result-title">{{ job.full_name }}</h2>
+                    <h4 class="result-description">{{ job.description }}</h4>
                     <p class="result-date">{{ job.created_at|to_jalali:"%Y/%m/%d" }}</p>
                     {% if request.user.is_authenticated %}
                         <div class="result-link"><a target="_blank" href="{{ job.link }}">دیدن صفحه

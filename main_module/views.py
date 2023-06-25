@@ -106,7 +106,7 @@ class ResultSeekerView(View):
         if search == "all":
             jobs = JobSeeker.objects.all()
         else:
-            jobs = JobSeeker.objects.filter(title__contains=search)
+            jobs = JobSeeker.objects.filter(full_name__contains=search)
         jobs = pagination(request, jobs, 24)
         # wallet.withdraw(1)
         return render(request, "main_module/result_seeker.html",

@@ -49,6 +49,7 @@ class Job(models.Model):
 class JobSeeker(models.Model):
     site = models.ForeignKey("Site", on_delete=models.SET_NULL, null=True)
     full_name = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
     avatar = models.ImageField("images", null=True, blank=True)
     image = models.TextField(validators=[URLValidator()], null=True, blank=True, verbose_name="آدرس تصویر")
     link = models.TextField(validators=[URLValidator()], null=True, blank=True, verbose_name="لینک صفحه آگهی")

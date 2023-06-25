@@ -34,7 +34,7 @@
             </div>
             <div class="search-what-btns">
                 <div onclick="searchInJobseeker()" class="search-in-jobseeker">
-                    جست و جو به عنولن کارفرما
+                    جست و جو به عنوان کارفرما
                 </div>
                 <div onclick="searchInJob()" class="search-in-jobs">
                     جست و جو برای شفل ها
@@ -48,13 +48,18 @@
 
 <script>
     let input = document.querySelector("#search-input")
+    let currentUrl = location.protocol + '//' + location.host;
 
     function searchInJobseeker() {
-        location.replace(`http://127.0.0.1:8000/s/${input.value}`)
+        let linkEl = document.createElement("a")
+        linkEl.href = `${currentUrl}/s/${input.value}`
+        linkEl.click()
     }
 
     function searchInJob() {
-        location.replace(`http://127.0.0.1:8000/v/${input.value}`)
+        let linkEl2 = document.createElement("a")
+        linkEl2.href = `${currentUrl}/v/${input.value}`
+        linkEl2.click()
     }
 </script>
 <!--<script src="js/suggestions.js"></script>-->

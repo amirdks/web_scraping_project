@@ -25,8 +25,12 @@ app.conf.beat_schedule = {
         'schedule': 30.0 * 60,
     },
     'linkedin-every-1-hour': {
-        'task': 'tasks.fetch_data_from_linkedin',
+        'task': 'main_module.tasks.fetch_data_from_linkedin',
         'schedule': 60.0 * 60,
+    },
+    'daneshmandjobs-every-30-minutes': {
+        'task': 'main_module.tasks.fetch_data_from_jobseeker',
+        'schedule': 10.0,
     },
 }
 app.conf.timezone = 'UTC'
