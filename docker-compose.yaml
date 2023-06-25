@@ -1,54 +1,118 @@
 version: '3.8'
 
 services:
-
-  database:
-    container_name: database
-    image: postgres
+  web_database:
+    container_name: web_database
+    image: postgres:14.1-alpine
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - ./postgres-data:/var/lib/postgresql/data
     restart: always
-  
+
+#  pgbackups:
+#    image: prodrigestivill/postgres-backup-local
+#    restart: always
+#    user: postgres:postgres # Optional: see below
+#    volumes:
+#      - /var/opt/pgbackups:/backups
+#    links:
+#      - database
+#    depends_on:
+#      - database
+#    environment:
+#      - POSTGRES_HOST=database
+#      - POSTGRES_DB=postgres
+#      - POSTGRES_USER=postgres
+#      - POSTGRES_PASSWORD=postgres
+#      #  - POSTGRES_PASSWORD_FILE=/run/secrets/db_password <-- alternative for POSTGRES_PASSWORD (to use with docker secrets)
+#      - POSTGRES_EXTRA_OPTS=-Z6 --schema=public --blobs
+#      - SCHEDULE=@daily
+#      - BACKUP_KEEP_DAYS=7
+#      - BACKUP_KEEP_WEEKS=4
+#      - BACKUP_KEEP_MONTHS=6
+#      - HEALTHCHECK_PORT=8080
+
+  redis:
+    image: redis:alpine
+    expose:
+      - 6379
+
   
   app:
     build:
       context: .
     image: app
-    container_name: django-app
+    container_name: web_django-app
+    command: >
+      bash -c "while ! python3 manage.py sqlflush > /dev/null 2>&1 ; do sleep 1; done && \
+                   python3 manage.py makemigrations --noinput && \
+                   python3 manage.py migrate --noinput && \
+                   python3 manage.py collectstatic --noinput --clear && \
+                   python3 manage.py createsuperuser --user admin --email admin@admin.com  --noinput; \
+                   gunicorn -c gunicorn.py core.wsgi"
     volumes:
-      - static:/usr/src/app/static
+      - staticfiles:/usr/src/app/staticfiles
       - media:/usr/src/app/media
       - .:/usr/src/app
     depends_on:
-      - database
+      - web_database
     environment:
-      - SECRET_KEY=nv&l8x*mb@+n%d#ebzcf_oa#dku@h!$gxq8im#sqcq^q#p3m86
       - DEBUG=False
-      - ALLOWED_HOSTS=app
+      - SECRET_KEY=qyep%nsft1l%8=zgpi9$%tlge16f-%sp(r-8%29m-h$(t8nj^p
+      - ALLOWED_HOSTS=193.107.48.7,127.0.0.1,localhost,193.107.48.6,193.107.48.8
       - DATABASE_NAME=postgres
       - DATABASE_USER=postgres
       - DATABASE_PASSWORD=postgres
-      - DATABASE_HOST=database
+      - DATABASE_HOST=web_database
       - DATABASE_PORT=5432
+      - LOGLEVEL=INFO
+      - DJANGO_SUPERUSER_PASSWORD=admin
+
+  celery:
+    restart: always
+    build:
+      context: .
+    command: celery -A core worker -l info -B --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - staticfiles:/usr/src/app/staticfiles
+      - media:/usr/src/app/media
+      - .:/usr/src/app
+    environment:
+      - DEBUG=False
+      - SECRET_KEY=qyep%nsft1l%8=zgpi9$%tlge16f-%sp(r-8%29m-h$(t8nj^p
+      - ALLOWED_HOSTS=193.107.48.7,127.0.0.1,localhost,193.107.48.6,193.107.48.8
+      - DATABASE_NAME=postgres
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_HOST=web_database
+      - DATABASE_PORT=5432
+      - LOGLEVEL=INFO
+    depends_on:
+      - web_database
+      - redis
+      - app
   
   
   nginx:
     image: nginx
-    container_name: nginx
+    container_name: web_nginx
     ports:
-      - "92:80"
+      - "3000:80"
+      - "443:443"
     volumes:
       - ./nginx:/etc/nginx/conf.d
-      - static:/var/www/static
+      - staticfiles:/var/www/staticfiles
+#      - /etc/ssl/certs:/etc/ssl/certs
+#      - /etc/ssl/private:/etc/ssl/private
+#      - /home/nginx:/home/nginx
       - media:/var/www/media
     depends_on:
       - app
 
 volumes:
   postgres:
-  static:
+  staticfiles:
   media:

@@ -12,7 +12,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+import environ
 
+env = environ.Env()
+environ.Env.read_env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,15 +23,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', "nv&l8x*mb@+n%d#ebzcf_oa#dku@h!$gxq8im#sqcq^q#p3m86")
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', True)
+DEBUG = os.environ.get("DEBUG") == "True"
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(",")
+CSRF_TRUSTED_ORIGINS = [
+    "https://127.0.0.1", "http://127.0.0.1", "https://193.107.48.8", "http://193.107.48.8",
+    "https://193.107.48.6", "http://193.107.48.6"
+]
 
 # for test
 
 # ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS', '*')]
-ALLOWED_HOSTS = ["*"]
+# ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -79,23 +87,25 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': os.environ.get('DATABASE_NAME', 'postgres'),
-#         'USER': os.environ.get('DATABASE_USER', 'postgres'),
-#         'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'postgres'),
-#         'HOST': os.environ.get('DATABASE_HOST', '127.0.0.1'),
-#         'PORT': os.environ.get('DATABASE_PORT', 5432),
-#     }
-# }
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.environ.get('DATABASE_NAME', 'postgres'),
+            'USER': os.environ.get('DATABASE_USER', 'postgres'),
+            'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'postgres'),
+            'HOST': os.environ.get('DATABASE_HOST', '127.0.0.1'),
+            'PORT': os.environ.get('DATABASE_PORT', 5432),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -132,7 +142,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
-# STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/medias/'
 
