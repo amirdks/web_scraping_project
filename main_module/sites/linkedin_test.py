@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver import DesiredCapabilities
 from selenium.webdriver.common import by
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -23,7 +24,8 @@ class LinkedinTest(Jobs):
         options = Options()
         options.headless = True
         options.add_argument("--window-size=1920,1080")
-        self.driver = webdriver.Firefox(options=options)
+        # self.driver = webdriver.Firefox(options=options)
+        self.driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.FIREFOX, options=options)
         self.site_id = Site.objects.get(title="linkedin").id
 
     def autologin(self, username="amirdks84@gmail.com", password="61683550",

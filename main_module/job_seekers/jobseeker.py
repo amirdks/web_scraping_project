@@ -5,6 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver import DesiredCapabilities
 from selenium.webdriver.firefox.options import Options
 
 from main_module.models import JobSeeker, Site
@@ -98,7 +99,8 @@ class JobSeekerClass(Jobs):
         options = Options()
         options.headless = True
         options.add_argument("--window-size=1920,1080")
-        self.driver = webdriver.Firefox(options=options)
+        # self.driver = webdriver.Firefox(options=options)
+        self.driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.FIREFOX, options=options)
         self.rang = self.range1(1, self.page_count)
 
     def save_jobs_in_db(self):
