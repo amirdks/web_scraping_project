@@ -9,7 +9,7 @@ from main_module.sites.linkedin import Linkedin
 from main_module.sites.linkedin_test import LinkedinTest
 
 
-@shared_task
+# @shared_task
 def fetch_data_from_jobinja():
     try:
         jobinja_setting = ScrapingSetting.objects.get(site__title="jobinja")
@@ -27,7 +27,7 @@ def fetch_data_from_jobinja():
     return res
 
 
-@shared_task
+# @shared_task
 def fetch_data_from_divar():
     try:
         jobinja_setting = ScrapingSetting.objects.get(site__title="divar")
@@ -44,7 +44,7 @@ def fetch_data_from_divar():
     return res
 
 
-@shared_task()
+# @shared_task()
 def fetch_data_from_linkedin():
     try:
         jobinja_setting = ScrapingSetting.objects.get(site__title="linkedin")
@@ -63,7 +63,7 @@ def fetch_data_from_linkedin():
         return "failed returned"
 
 
-@shared_task()
+# @shared_task()
 def fetch_data_from_jobseeker():
     try:
         jobinja_setting = ScrapingSetting.objects.get(site__title="jobseeker")

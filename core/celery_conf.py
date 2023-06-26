@@ -31,11 +31,11 @@ app.conf.beat_schedule = {
     },
     'linkedin-every-1-hour': {
         'task': 'main_module.tasks.fetch_data_from_linkedin',
-        'schedule': 60.0 * 60,
+        'schedule': 30.0 * 60,
     },
     'daneshmandjobs-every-30-minutes': {
         'task': 'main_module.tasks.fetch_data_from_jobseeker',
-        'schedule': 10.0 * 60,
+        'schedule': 30.0 * 60,
     },
 }
 app.conf.timezone = 'UTC'

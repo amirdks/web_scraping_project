@@ -64,3 +64,16 @@ class JobSeeker(models.Model):
 
     def __str__(self):
         return self.full_name
+
+
+class ScrapingSetting(models.Model):
+    site = models.ForeignKey("Site", on_delete=models.CASCADE, verbose_name="سایت")
+    number = models.PositiveIntegerField(default=20, verbose_name="تعداد")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.site.title} ==> {self.number}"
+
+    class Meta:
+        verbose_name = 'تنظیمات اسکرپینگ'
+        verbose_name_plural = 'تنظیمات اسکرپینگ'

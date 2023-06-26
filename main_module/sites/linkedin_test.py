@@ -18,8 +18,8 @@ init_url = "https://www.linkedin.com/jobs/search/?currentJobId=3550746733&locati
 
 
 class LinkedinTest(Jobs):
-    def __init__(self, url=init_url):
-        super().__init__(url, 25, 20)
+    def __init__(self, url=init_url, item_count=20, page_item_number=20):
+        super().__init__(url, item_count, page_item_number)
         options = Options()
         options.headless = True
         options.add_argument("--window-size=1920,1080")
