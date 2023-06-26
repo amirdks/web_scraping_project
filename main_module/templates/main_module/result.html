@@ -59,7 +59,7 @@
             </li>
         {% endif %}
         <!-- TODO fix this job forloop limitation-->
-        {% for pageNumber in jobs.paginator.page_range|custom_slice:jobs.number %}
+        {% for pageNumber in jobs.paginator.page_range %}
             <li class="courses__pagination-item">
             <span class="courses__pagination-link {% if jobs.number == pageNumber %} courses__pagination-link--active {% endif %}"
                   onclick="insertParam('page', '{{ pageNumber }}')">{{ pageNumber }}</span>
