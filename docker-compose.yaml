@@ -101,7 +101,7 @@ services:
     container_name: web_nginx
     ports:
       - "3000:80"
-      - "443:443"
+#      - "443:443"
     volumes:
       - ./nginx:/etc/nginx/conf.d
       - staticfiles:/var/www/staticfiles
