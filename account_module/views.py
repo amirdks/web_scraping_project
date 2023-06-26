@@ -19,7 +19,7 @@ class LoginView(View):
             return redirect(reverse("search_view"))
 
     def get(self, request):
-        if not request.user.is_authenticated:
+        if request.user.is_authenticated:
             return redirect(reverse('search_view'))
         context = {
             "form": LoginForm()

@@ -122,3 +122,24 @@ body {
         height: 200px;
     }
 }
+@media screen and (max-width: 500px) {
+
+    #user-info{
+        display: none!important;
+        opacity: 0;
+        visibility: hidden;
+    }
+    .result-link{
+        width: 90%;
+        font-size: .8rem;
+    }
+    .result-link a{
+        opacity: .9;
+    }
+    .courses__pagination-link{
+        font-size: .8rem;
+        width: 2rem;
+        height: 2rem;
+        margin: 0 0.2rem;
+    }
+}
