@@ -20,7 +20,7 @@ class LoginView(View):
 
     def get(self, request):
         if not request.user.is_authenticated:
-            return redirect(reverse('home_view'))
+            return redirect(reverse('search_view'))
         context = {
             "form": LoginForm()
         }
@@ -42,7 +42,7 @@ class LoginView(View):
 class LogoutView(LoginRequiredMixin, View):
     def get(self, request):
         if not request.user.is_authenticated:
-            return redirect(reverse('home_view'))
+            return redirect(reverse('search_view'))
         logout(request)
         return redirect(reverse('login_view'))
 
