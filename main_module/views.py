@@ -15,7 +15,8 @@ from account_module.models import Wallet
 from core import settings
 from main_module.forms import SearchForm
 from main_module.models import Job, JobSeeker
-from main_module.utils import fetch_data_from_jobseeker, fetch_data_from_linkedin, fetch_data_from_jobinja, fetch_data_from_divar
+from main_module.utils import fetch_data_from_jobseeker, fetch_data_from_linkedin, fetch_data_from_jobinja, \
+    fetch_data_from_divar, fetch_data_from_jobvision
 
 
 def pagination(request, jobs, item_count):
@@ -93,10 +94,12 @@ class RedirectView(LoginRequiredMixin, View):
 
 class TestView(View):
     def get(self, request):
-        fetch_data_from_jobseeker()
-        fetch_data_from_linkedin()
-        fetch_data_from_jobinja()
-        fetch_data_from_divar()
+        # fetch_data_from_jobseeker()
+        # fetch_data_from_linkedin()
+        # fetch_data_from_jobinja()
+        # fetch_data_from_divar()
+        res = fetch_data_from_jobvision()
+        print(res)
         return HttpResponse("salam")
 
 

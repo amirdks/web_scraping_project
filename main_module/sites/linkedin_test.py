@@ -52,18 +52,7 @@ class LinkedinTest(Jobs):
         except WebDriverException as e:
             raise self.RequestException("check your internet connection")
         time.sleep(5)
-        start = time.time()
-        last_height = self.driver.execute_script("return document.body.scrollHeight")
-        while True:
-            self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(5)
-            new_height = self.driver.execute_script("return document.body.scrollHeight")
-            if new_height == last_height:
-                break
-            last_height = new_height
-            end = time.time()
-            if round(end - start) > 5:
-                break
+        self.scroll_down()
         company_page = self.driver.page_source
         linkedin_soup = bs(company_page.encode("utf-8"), "html.parser")
         linkedin_soup.prettify()

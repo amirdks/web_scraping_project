@@ -1,6 +1,7 @@
 import datetime
 import math
 import re
+import time
 
 import requests
 from bs4 import BeautifulSoup
@@ -24,10 +25,18 @@ class Jobs:
         duplicated_job_items = Job.objects.filter(site_id=self.site_id, link__in=self.links_list).values_list("link")
         duplicated = [link[0] for link in duplicated_job_items]
         res = [x for x in self.job_results if x["link"] not in duplicated]
-        for idx, item in enumerate(res[::-1]):
+        new_list = []
+        link_list = []
+        for item in res:
+            if not item.get("link") in link_list:
+                new_list.append(item)
+            link_list.append(item.get("link"))
+        for idx, item in enumerate(new_list[::-1]):
             # if self.get_last_job_link() == item["link"]:
             #     return "almost_success"
             if idx == 0: item.update({"is_last": True})
+            print("runned")
+            print(item)
             Job.objects.create(**item)
         return "success"
 
@@ -46,6 +55,20 @@ class Jobs:
 
     class RequestException(Exception):
         pass
+
+    def scroll_down(self):
+        start = time.time()
+        last_height = self.driver.execute_script("return document.body.scrollHeight")
+        while True:
+            self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(5)
+            new_height = self.driver.execute_script("return document.body.scrollHeight")
+            if new_height == last_height:
+                break
+            last_height = new_height
+            end = time.time()
+            if round(end - start) > 5:
+                break
 
 # class Jobs:
 #     def __init__(self, url=init_url, item_count=25, page_item_number=20):

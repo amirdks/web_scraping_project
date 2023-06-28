@@ -100,7 +100,6 @@ class JobSeekerClass(Jobs):
         options.headless = True
         options.add_argument("--window-size=1920,1080")
         self.driver = webdriver.Firefox(options=options)
-        # self.driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.FIREFOX, options=options)
         self.rang = self.range1(1, self.page_count)
 
     def save_jobs_in_db(self):
@@ -115,8 +114,6 @@ class JobSeekerClass(Jobs):
                 new_list.append(item)
             link_list.append(item.get("link"))
         for idx, item in enumerate(new_list[::-1]):
-            # if self.get_last_job_link() == item["link"]:
-            #     return "almost_success"
             if idx == 0: item.update({"is_last": True})
             JobSeeker.objects.create(**item)
         return "success"
@@ -160,10 +157,6 @@ class JobSeekerClass(Jobs):
                 if not description:
                     description = item.select_one("div.desc")
                 description = description.text.strip()
-                # time = item.find("span", class_="kt-post-card__bottom-description kt-text-truncate").text.strip()
-                # instantaneous = item.find("span", class_="kt-post-card__red-text")
-                # if instantaneous:
-                #     time = "instantaneous"
                 image = item.select_one("img")
                 image_link = None
                 if image:
@@ -180,17 +173,3 @@ class JobSeekerClass(Jobs):
                     "description": description,
                 }
                 self.job_results.append(result)
-
-    def scroll_down(self):
-        start = time.time()
-        last_height = self.driver.execute_script("return document.body.scrollHeight")
-        while True:
-            self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(2)
-            new_height = self.driver.execute_script("return document.body.scrollHeight")
-            if new_height == last_height:
-                break
-            last_height = new_height
-            end = time.time()
-            if round(end - start) > 5:
-                break

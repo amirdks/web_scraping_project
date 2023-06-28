@@ -60,6 +60,14 @@ body {
     text-align: center;
     font-size: 1.2em;
 }
+.job-icon{
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+    border-radius: 20px;
+}
 .result-description{
     font-size: 1em;
     text-align: center;

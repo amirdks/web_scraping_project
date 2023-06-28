@@ -8,6 +8,7 @@ from django.db.models.expressions import NoneType
 class Site(models.Model):
     title = models.CharField(max_length=255, unique=True)
     base_url = models.TextField(validators=[URLValidator()], null=True, blank=True)
+    icon_image = models.ImageField(upload_to="images/icons",null=True, blank=True )
     last_update = models.DateTimeField()
     created_at = models.DateField(auto_now_add=True)
 

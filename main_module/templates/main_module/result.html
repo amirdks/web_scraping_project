@@ -37,12 +37,16 @@
                 {% endif %}
                 <div class="result-content">
                     <h2 class="result-title">{{ job.title }}</h2>
+                    {% if job.site.icon_image %}
+                        <img class="job-icon" src="{{ job.site.icon_image.url }}" alt="">
+                    {% endif %}
                     <p class="result-date">{{ job.published_at|to_jalali:"%Y/%m/%d" }}</p>
                     {% if request.user.is_authenticated %}
                         <div class="result-link"><a target="_blank" href="{{ job.link }}">دیدن صفحه
                             آگهی</a></div>
                     {% else %}
-                        <div class="result-link"><a href="{% url 'login_view' %}">برای دیدن آگهی لطفا ابتدا لاگین کنید</a></div>
+                        <div class="result-link"><a href="{% url 'login_view' %}">برای دیدن آگهی لطفا ابتدا لاگین
+                            کنید</a></div>
                     {% endif %}
                 </div>
             </div>
