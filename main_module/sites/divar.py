@@ -19,10 +19,6 @@ class Divar(Jobs):
         self.image_regex = r'https?:\/\/storage.jobinjacdn.com/other/files/uploads/images/[\s\S]*'
         self.base_url = "https://divar.ir"
         self.site_id = Site.objects.get(title="divar").id
-        # options = Options()
-        # options.headless = True
-        # options.add_argument("--window-size=1920,1080")
-        # self.driver = webdriver.Firefox(options=options)
 
     def get_page_result(self):
         page_results = []
@@ -36,7 +32,8 @@ class Divar(Jobs):
                 raise self.RequestException(e)
             soup = BeautifulSoup(response.content, "html.parser")
             result = (
-                soup.findAll("div", attrs={"class": "post-card-item-af972 kt-col-6-bee95 kt-col-xxl-4-e9d46"})[:self.last_page_item]
+                soup.findAll("div", attrs={"class": "post-card-item-af972 kt-col-6-bee95 kt-col-xxl-4-e9d46"})[
+                :self.last_page_item]
                 if len(self.rang) == page
                 else soup.findAll("div", attrs={"class": "post-card-item-af972 kt-col-6-bee95 kt-col-xxl-4-e9d46"})
             )
@@ -68,6 +65,3 @@ class Divar(Jobs):
                     "site_id": self.site_id
                 }
                 self.job_results.append(result)
-
-    def generate_item_date(self, time):
-        pass

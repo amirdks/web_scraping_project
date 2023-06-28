@@ -21,21 +21,9 @@ app.conf.result_expires = timedelta(days=1)
 app.conf.task_always_eager = False
 app.conf.worker_prefetch_multiplier = 4
 app.conf.beat_schedule = {
-    'jobinja-every-30-minutes': {
-        'task': 'main_module.tasks.fetch_data_from_jobinja',
-        'schedule': 30.0 * 60,
-    },
-    'divar-every-30-minutes': {
-        'task': 'main_module.tasks.fetch_data_from_divar',
-        'schedule': 30.0 * 60,
-    },
-    'linkedin-every-1-hour': {
-        'task': 'main_module.tasks.fetch_data_from_linkedin',
-        'schedule': 30.0 * 60,
-    },
-    'daneshmandjobs-every-30-minutes': {
-        'task': 'main_module.tasks.fetch_data_from_jobseeker',
-        'schedule': 30.0 * 60,
+    'fetch-all-data-every-30-minutes': {
+        'task': 'main_module.tasks.fetch_full_data',
+        'schedule': 60 * 60,
     },
 }
 app.conf.timezone = 'UTC'

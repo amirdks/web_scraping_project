@@ -35,8 +35,6 @@ class Jobs:
             # if self.get_last_job_link() == item["link"]:
             #     return "almost_success"
             if idx == 0: item.update({"is_last": True})
-            print("runned")
-            print(item)
             Job.objects.create(**item)
         return "success"
 

@@ -99,7 +99,8 @@ class JobSeekerClass(Jobs):
         options = Options()
         options.headless = True
         options.add_argument("--window-size=1920,1080")
-        self.driver = webdriver.Firefox(options=options)
+        # self.driver = webdriver.Firefox(options=options)
+        self.driver = webdriver.Chrome(options=options)
         self.rang = self.range1(1, self.page_count)
 
     def save_jobs_in_db(self):

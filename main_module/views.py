@@ -16,7 +16,7 @@ from core import settings
 from main_module.forms import SearchForm
 from main_module.models import Job, JobSeeker
 from main_module.utils import fetch_data_from_jobseeker, fetch_data_from_linkedin, fetch_data_from_jobinja, \
-    fetch_data_from_divar, fetch_data_from_jobvision
+    fetch_data_from_divar, fetch_data_from_jobvision, fetch_data_from_irantalent, fetch_data_from_e_estekhdam
 
 
 def pagination(request, jobs, item_count):
@@ -56,9 +56,9 @@ class ResultView(View):
         else:
             wallet = None
         if search == "all":
-            jobs = Job.objects.all()
+            jobs = Job.objects.all().order_by("-published_at")
         else:
-            jobs = Job.objects.filter(title__contains=search)
+            jobs = Job.objects.filter(title__contains=search).order_by("-published_at")
         jobs = pagination(request, jobs, 24)
         # wallet.withdraw(1)
         return render(request, "main_module/result.html",
@@ -110,9 +110,9 @@ class ResultSeekerView(View):
         else:
             wallet = None
         if search == "all":
-            jobs = JobSeeker.objects.all()
+            jobs = JobSeeker.objects.all().order_by("-created_at")
         else:
-            jobs = JobSeeker.objects.filter(full_name__contains=search)
+            jobs = JobSeeker.objects.filter(full_name__contains=search).order_by("-created_at")
         jobs = pagination(request, jobs, 24)
         # wallet.withdraw(1)
         return render(request, "main_module/result_seeker.html",
